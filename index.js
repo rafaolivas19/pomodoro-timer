@@ -32,7 +32,7 @@ function getNextOffTime() {
     if (minutes < 24) {
         nextOffTime.setMinutes(24);
     } else if (minutes < 54) {
-        targetTime.setMinutes(54);
+        nextOffTime.setMinutes(54);
     } else {
         nextOffTime.setHours(now.getHours() + 1);
         nextOffTime.setMinutes(24);
