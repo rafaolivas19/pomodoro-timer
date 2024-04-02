@@ -3,17 +3,20 @@ let isTimerActive = false
 document.getElementById('start-btn').onclick = () => {
     if (isTimerActive) return
     isTimerActive = true
-    let secondsLeft = getSecondsToNextOffTime()
+    const nextOffTime = getNextOffTime()
+    let secondsLeft = getSecondsToNextOffTime(nextOffTime)
     document.getElementById('time-txt').textContent = getTimeStringFromSeconds(secondsLeft)
 
     const interval = setInterval(() => {
-        secondsLeft = getSecondsToNextOffTime()
-        document.getElementById('time-txt').textContent = getTimeStringFromSeconds(secondsLeft)
+        secondsLeft = getSecondsToNextOffTime(nextOffTime)
 
         if (secondsLeft <= 0) {
             clearInterval(interval) 
             isTimerActive = false
             electron.focusWindow()
+            document.getElementById('time-txt').textContent = '00:00'
+        } else {
+            document.getElementById('time-txt').textContent = getTimeStringFromSeconds(secondsLeft)
         }
     }, 1000)
 }
@@ -22,24 +25,23 @@ function getNextOffTime() {
     const now = new Date();
     const minutes = now.getMinutes();
 
-    let targetTime = new Date(now);
-    targetTime.setSeconds(0); // Reset seconds to 0
-    targetTime.setMilliseconds(0); // Reset milliseconds to 0
+    let nextOffTime = new Date(now);
+    nextOffTime.setSeconds(0); // Reset seconds to 0
+    nextOffTime.setMilliseconds(0); // Reset milliseconds to 0
 
     if (minutes < 24) {
-        targetTime.setMinutes(24);
+        nextOffTime.setMinutes(24);
     } else if (minutes < 54) {
         targetTime.setMinutes(54);
     } else {
-        targetTime.setHours(now.getHours() + 1);
-        targetTime.setMinutes(24);
+        nextOffTime.setHours(now.getHours() + 1);
+        nextOffTime.setMinutes(24);
     }
 
-    return targetTime;
+    return nextOffTime;
 }
 
-function getSecondsToNextOffTime() {
-    const nextOffTime = getNextOffTime();
+function getSecondsToNextOffTime(nextOffTime) {
     const now = new Date();
     const differenceInSeconds = Math.floor((nextOffTime - now) / 1000);
     return differenceInSeconds;
